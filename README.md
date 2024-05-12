@@ -14,12 +14,12 @@ go install github.com/mkadirtan/feed-toolbelt@latest
 
 Find feeds on a specific website:
 ```bash
-ft find nooptoday.com
+feed-toolbelt find nooptoday.com
 ```
 
 # Usage
 ```bash
-ft COMMAND [OPTIONS] url
+feed-toolbelt COMMAND [OPTIONS] url
 ```
 
 Available flags:
@@ -31,12 +31,12 @@ Available flags:
 
 To filter out only rss feeds:
 ```bash
-ft find -filter=rss nooptoday.com
+feed-toolbelt find -filter=rss nooptoday.com
 ```
 
 For more information run:
 ```bash
-ft help
+feed-toolbelt help
 ```
 
 ## 🤝 Contributing
@@ -50,20 +50,22 @@ cd feed-toolbelt
 
 ### Build the project
 
+Use `GOEXPERIMENT=rangefunc`, otherwise build fails
+
 ```bash
-make build
+go build -o feed-toolbelt cmd/main.go
 ```
 
 ### Run the project
 
 ```bash
-./ft find nooptoday.com
+./feed-toolbelt find nooptoday.com
 ```
 
 ### Run the tests
 
 ```bash
-make test
+go test ./...
 ```
 
 ### Submit a pull request
