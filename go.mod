@@ -1,5 +1,5 @@
-module github.com/mkadirtan/feed-toolbelt
+module feed-toolbelt
 
-go 1.22.2
+go 1.22.3
 
-require golang.org/x/net v0.25.0
+require golang.org/x/net v0.25.0 // indirect
