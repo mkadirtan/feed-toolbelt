@@ -25,7 +25,7 @@ Example: feed-toolbelt find https://nooptoday.com`
 	}
 
 	targetHostname := os.Args[2]
-	foundFeeds := inspect.InspectURL(targetHostname)
+	foundFeeds := inspect.InspectURL(targetHostname, true, true, false)
 	for _, feed := range foundFeeds {
 		outputLogger.Println(feed)
 	}
