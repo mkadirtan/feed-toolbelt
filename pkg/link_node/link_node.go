@@ -7,6 +7,7 @@ package link_node
 
 import (
 	"github.com/mkadirtan/feed-toolbelt/pkg/attributes"
+
 	"golang.org/x/net/html"
 )
 

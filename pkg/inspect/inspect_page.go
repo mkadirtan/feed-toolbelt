@@ -5,6 +5,7 @@ import (
 
 	"github.com/mkadirtan/feed-toolbelt/pkg/link_node"
 	"github.com/mkadirtan/feed-toolbelt/pkg/script_node"
+
 	"golang.org/x/net/html"
 )
 
