@@ -1,3 +1,22 @@
+// Structured JSON Data in json+ld format
+// <script type="application/ld+json">
+//{
+//  "@context": "http://schema.org",
+//  "@type": "WebSite",
+//  "url": "http://example.com",
+//  "potentialAction": {
+//    "@type": "SubscribeAction",
+//    "target": {
+//      "@type": "EntryPoint",
+//      "urlTemplate": "http://example.com/feed.json"
+//    }
+//  }
+//}
+//</script>
+// JSON+LD schemas use "urlTemplate" instead of fixed urls. They may require some variables such as:
+// "urlTemplate": "http://example.com/users/{userId}"
+// In that case, the url should be ignored to avoid confusion.
+
 package script_node
 
 import (
@@ -53,7 +72,11 @@ func (s *ScriptNode) ParseFields(z *html.Tokenizer) {
 	}
 
 	// Future Work: support more schemas
+	z.Next()
 	rawScript := z.Text()
+	if rawScript == nil {
+		return
+	}
 
 	var decodedJSON JSONLD
 	err := json.NewDecoder(bytes.NewBuffer(rawScript)).Decode(&decodedJSON)

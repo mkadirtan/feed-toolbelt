@@ -1,3 +1,8 @@
+// Link tags with rel=alternate
+// <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="http://example.com/rss">
+// Anchor Tags
+// <a href="http://example.com/feed.xml">Subscribe to our feed</a>
+
 package link_node
 
 import (

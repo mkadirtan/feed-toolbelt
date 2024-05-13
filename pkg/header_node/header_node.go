@@ -1,7 +1,9 @@
+// HTTP header
+// Link: <http://example.com/feed>; rel="alternate"; type="application/rss+xml"; title="RSS"
+
 package header_node
 
 import (
-	"net/http"
 	"net/url"
 	"strings"
 
@@ -19,12 +21,7 @@ func NewHeaderNode() HeaderNode {
 	return HeaderNode{}
 }
 
-func (h *HeaderNode) ParseFields(headers http.Header) {
-	linkHeader := headers.Get("link")
-	if linkHeader == "" {
-		return
-	}
-
+func (h *HeaderNode) ParseFields(linkHeader string) {
 	// Link: <http://example.com/feed>; rel="alternate"; type="application/rss+xml"; title="RSS"
 	parts := strings.Split(linkHeader, ";")
 	for _, part := range parts {
@@ -35,13 +32,15 @@ func (h *HeaderNode) ParseFields(headers http.Header) {
 				continue
 			}
 
-			h.nodeHref = u.RequestURI()
+			h.nodeHref = u.String()
+			continue
 		}
 
 		key, value, found := strings.Cut(part, "=")
 		if !found {
 			continue
 		}
+		key = strings.TrimSpace(key)
 
 		value, found = strings.CutSuffix(value, `"`)
 		if !found {
