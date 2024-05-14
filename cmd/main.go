@@ -48,7 +48,7 @@ The commands are:
 		}
 	}
 
-	if len(a.positionalArgs) < 0 {
+	if len(a.positionalArgs) < 1 {
 		a.debugLogger.Println("expected a command")
 		a.debugLogger.Println(usage)
 		os.Exit(1)
