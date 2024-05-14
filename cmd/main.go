@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"bufio"
@@ -20,8 +20,7 @@ type app struct {
 
 var a app
 
-func main() {
-	// outputLogger := log.New(os.Stdout, "", 0)
+func Run() {
 	a.debugLogger = log.New(os.Stderr, "", 0)
 	a.outputLogger = log.New(os.Stdout, "", 0)
 
