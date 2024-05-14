@@ -9,8 +9,18 @@
 package inspect
 
 import (
+	"io"
 	"net/http"
 )
+
+func InspectHTML(r io.Reader) []string {
+	feedsOnPage, found := inspectPage(r)
+	if found {
+		return feedsOnPage
+	} else {
+		return nil
+	}
+}
 
 func InspectURL(url string, checkHeaders bool, checkPage bool, checkCommonPaths bool) []string {
 	var feedURLs = make([]string, 0)
