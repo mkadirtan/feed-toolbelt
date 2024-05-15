@@ -11,6 +11,9 @@ package inspect
 import (
 	"io"
 	"net/http"
+	"slices"
+
+	"github.com/mkadirtan/feed-toolbelt/pkg/util"
 )
 
 func InspectHTML(r io.Reader) []string {
@@ -22,7 +25,7 @@ func InspectHTML(r io.Reader) []string {
 	}
 }
 
-func InspectURL(url string, checkHeaders bool, checkPage bool, checkCommonPaths bool) []string {
+func InspectURL(url string, checkHeaders bool, checkPage bool, checkCommonPaths bool, validateFeeds bool) []string {
 	var feedURLs = make([]string, 0)
 
 	resp, err := http.DefaultClient.Get(url)
@@ -48,6 +51,18 @@ func InspectURL(url string, checkHeaders bool, checkPage bool, checkCommonPaths 
 		if found {
 			for _, feedOnPage := range feedsOnPage {
 				feedURLs = append(feedURLs, feedOnPage)
+			}
+		}
+	}
+
+	if validateFeeds {
+		for i, u := range feedURLs {
+			if response, httpErr := http.DefaultClient.Get(u); httpErr != nil || response.StatusCode < 200 || response.StatusCode > 299 {
+				continue
+			} else {
+				if !util.ValidateFeed(response.Body) {
+					slices.Delete(feedURLs, i, i+1)
+				}
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/mkadirtan/feed-toolbelt/pkg/common_paths"
+	"github.com/mkadirtan/feed-toolbelt/pkg/util"
 )
 
 func inspectCommonPaths(url string) ([]string, bool) {
@@ -23,7 +24,9 @@ func inspectCommonPaths(url string) ([]string, bool) {
 			continue
 		}
 
-		feeds = append(feeds, candidateFeedURL)
+		if util.ValidateFeed(resp.Body) {
+			feeds = append(feeds, candidateFeedURL)
+		}
 	}
 
 	if len(feeds) > 0 {

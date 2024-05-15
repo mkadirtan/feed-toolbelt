@@ -33,7 +33,7 @@ func TestInspectURLHeaders(t *testing.T) {
 	}
 
 	s := httptest.NewServer(&m)
-	feedLinks := InspectURL(s.URL, true, false, false)
+	feedLinks := InspectURL(s.URL, true, false, false, false)
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed ")
 	}
@@ -55,7 +55,7 @@ func TestInspectURLPageLinks(t *testing.T) {
 	}
 
 	s := httptest.NewServer(&m)
-	feedLinks := InspectURL(s.URL, false, true, false)
+	feedLinks := InspectURL(s.URL, false, true, false, false)
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed ")
 	}
@@ -90,7 +90,7 @@ func TestInspectURLPageScripts(t *testing.T) {
 	}
 
 	s := httptest.NewServer(&m)
-	feedLinks := InspectURL(s.URL, false, true, false)
+	feedLinks := InspectURL(s.URL, false, true, false, false)
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed")
 	}

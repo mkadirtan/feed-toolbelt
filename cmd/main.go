@@ -116,6 +116,7 @@ func runFindCommand() {
 			slices.Contains(strategies, "header"),
 			slices.Contains(strategies, "page"),
 			slices.Contains(strategies, "common"),
+			false,
 		)
 		for _, feed := range feeds {
 			a.outputLogger.Println(feed)
