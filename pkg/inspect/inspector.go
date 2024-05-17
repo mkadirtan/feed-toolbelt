@@ -1,8 +1,9 @@
 package inspect
 
 import (
+	"bufio"
 	"errors"
-	"io"
+	"net/http"
 )
 
 type HandlerFunc func(string)
@@ -11,11 +12,13 @@ type Inspector struct {
 	config      InspectorConfig
 	foundFeeds  []string
 	visitedURLs []string
+	body        *bufio.Reader
+	header      http.Header
 }
 
 type InspectorConfig struct {
 	// strategies option is ignored in case PipedInput is defined
-	PipedInput *io.Reader
+	PipedInput *bufio.Reader
 
 	TargetURL  *string
 	Strategies struct {
@@ -34,51 +37,51 @@ type InspectorConfig struct {
 	DebugHandler HandlerFunc
 }
 
-type InspectorOption func(*InspectorConfig)
+type Option func(*InspectorConfig)
 
-func WithPipedInput(htmlBody io.Reader) InspectorOption {
+func WithPipedInput(htmlBody *bufio.Reader) Option {
 	return func(c *InspectorConfig) {
-		c.PipedInput = &htmlBody
+		c.PipedInput = htmlBody
 	}
 }
 
-func WithTargetURL(targetURL string) InspectorOption {
+func WithTargetURL(targetURL string) Option {
 	return func(c *InspectorConfig) {
 		c.TargetURL = &targetURL
 	}
 }
 
-func WithStrategyHeader() InspectorOption {
+func WithStrategyHeader() Option {
 	return func(c *InspectorConfig) {
 		c.Strategies.Header = true
 	}
 }
 
-func WithStrategyPage() InspectorOption {
+func WithStrategyPage() Option {
 	return func(c *InspectorConfig) {
 		c.Strategies.Page = true
 	}
 }
 
-func WithStrategyCommon() InspectorOption {
+func WithStrategyCommon() Option {
 	return func(c *InspectorConfig) {
 		c.Strategies.Common = true
 	}
 }
 
-func WithValidate() InspectorOption {
+func WithValidate() Option {
 	return func(c *InspectorConfig) {
 		c.Validate = true
 	}
 }
 
-func WithOutputHandler(outputHandler HandlerFunc) InspectorOption {
+func WithOutputHandler(outputHandler HandlerFunc) Option {
 	return func(c *InspectorConfig) {
 		c.OutputHandler = outputHandler
 	}
 }
 
-func WithDebugHandler(debugHandler HandlerFunc) InspectorOption {
+func WithDebugHandler(debugHandler HandlerFunc) Option {
 	return func(c *InspectorConfig) {
 		c.DebugHandler = debugHandler
 	}
@@ -89,7 +92,7 @@ var (
 	errNoOutputHandler = errors.New("no output handler specified")
 )
 
-func NewInspector(options ...InspectorOption) (*Inspector, error) {
+func NewInspector(options ...Option) (*Inspector, error) {
 	config := &InspectorConfig{}
 
 	for _, option := range options {
