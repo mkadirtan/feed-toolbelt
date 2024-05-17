@@ -16,7 +16,7 @@ import (
 )
 
 func (i *Inspector) Find() {
-	if i.config.TargetHTML != nil {
+	if i.config.PipedInput != nil {
 		i.findTargetHTML()
 		return
 	}
@@ -41,7 +41,7 @@ func (i *Inspector) processFeedCandidate(feedCandidateURL string, mustValidate b
 }
 
 func (i *Inspector) findTargetHTML() {
-	feedsOnPage, _ := inspectPage(*i.config.TargetHTML)
+	feedsOnPage, _ := inspectPage(*i.config.PipedInput)
 	for _, feed := range feedsOnPage {
 		i.processFeedCandidate(feed, false)
 	}
