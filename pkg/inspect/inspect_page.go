@@ -1,17 +1,14 @@
 package inspect
 
 import (
-	"io"
-
 	"github.com/mkadirtan/feed-toolbelt/pkg/link_node"
 	"github.com/mkadirtan/feed-toolbelt/pkg/script_node"
 
 	"golang.org/x/net/html"
 )
 
-func inspectPage(r io.Reader) ([]string, bool) {
-	var hrefs = make([]string, 0)
-	z := html.NewTokenizer(r)
+func (i *Inspector) applyStrategyPage() {
+	z := html.NewTokenizer(i.body)
 
 	for {
 		tt := z.Next()
@@ -35,20 +32,14 @@ func inspectPage(r io.Reader) ([]string, bool) {
 			feedNode := link_node.NewLinkNode(tag)
 			feedNode.ParseFields(z)
 			if feedNode.IsValidFeed() {
-				hrefs = append(hrefs, feedNode.FeedURL())
+				i.processFeedCandidate(feedNode.FeedURL(), false)
 			}
 		case "script":
 			scriptNode := script_node.NewScriptNode(tag)
 			scriptNode.ParseFields(z)
 			if scriptNode.IsValidFeed() {
-				hrefs = append(hrefs, scriptNode.FeedURL())
+				i.processFeedCandidate(scriptNode.FeedURL(), false)
 			}
 		}
 	}
-
-	if len(hrefs) > 0 {
-		return hrefs, true
-	}
-
-	return nil, false
 }
