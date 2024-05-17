@@ -1,9 +1,16 @@
 package main
 
 import (
-	"github.com/mkadirtan/feed-toolbelt/cmd"
+	"github.com/alecthomas/kong"
+	"github.com/mkadirtan/feed-toolbelt/cmd/find"
 )
 
+var cli struct {
+	Find find.FindCMD `cmd:""`
+}
+
 func main() {
-	cmd.Run()
+	ctx := kong.Parse(&cli, kong.ShortUsageOnError())
+	err := ctx.Run()
+	ctx.FatalIfErrorf(err)
 }

@@ -14,9 +14,8 @@ type Inspector struct {
 }
 
 type InspectorConfig struct {
-	// strategies option is ignored in case TargetHTML is defined
-	// TargetHTML takes precedence over targetURL
-	TargetHTML *io.Reader
+	// strategies option is ignored in case PipedInput is defined
+	PipedInput *io.Reader
 
 	TargetURL  *string
 	Strategies struct {
@@ -37,9 +36,9 @@ type InspectorConfig struct {
 
 type InspectorOption func(*InspectorConfig)
 
-func WithTargetHTML(htmlBody io.Reader) InspectorOption {
+func WithPipedInput(htmlBody io.Reader) InspectorOption {
 	return func(c *InspectorConfig) {
-		c.TargetHTML = &htmlBody
+		c.PipedInput = &htmlBody
 	}
 }
 
@@ -97,7 +96,7 @@ func NewInspector(options ...InspectorOption) (*Inspector, error) {
 		option(config)
 	}
 
-	if config.TargetHTML == nil && config.TargetURL == nil {
+	if config.PipedInput == nil && config.TargetURL == nil {
 		return nil, errNoTarget
 	}
 
