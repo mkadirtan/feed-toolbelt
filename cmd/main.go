@@ -87,8 +87,14 @@ func runFindCommand() {
 	}
 
 	strategyFlag := f.String("strategy", "", "Choose which strategies to apply for finding feeds. Possible values are [header, page, common]")
+	validateFlag := f.Bool("validate", false, "Validate feed urls contain actual feeds")
 	// flag.ExitOnError doesn't return errors.
 	_ = f.Parse(a.optionArgs)
+
+	inspectorOptions := []inspect.InspectorOption{
+		inspect.WithOutputHandler(func(o string) { a.outputLogger.Println(o) }),
+		inspect.WithDebugHandler(func(d string) { a.debugLogger.Println(d) }),
+	}
 
 	validStrategies := []string{"header", "page", "common"}
 	defaultStrategies := []string{"header", "page"}
@@ -111,25 +117,38 @@ func runFindCommand() {
 	// targetURL is defined
 	if len(a.positionalArgs) >= 2 {
 		targetURL := a.positionalArgs[1]
-		feeds := inspect.InspectURL(
-			targetURL,
-			slices.Contains(strategies, "header"),
-			slices.Contains(strategies, "page"),
-			slices.Contains(strategies, "common"),
-			false,
-		)
-		for _, feed := range feeds {
-			a.outputLogger.Println(feed)
+		inspectorOptions = append(inspectorOptions, inspect.WithTargetURL(targetURL))
+		if slices.Contains(strategies, "header") {
+			inspectorOptions = append(inspectorOptions, inspect.WithStrategyHeader())
 		}
+		if slices.Contains(strategies, "page") {
+			inspectorOptions = append(inspectorOptions, inspect.WithStrategyPage())
+		}
+		if slices.Contains(strategies, "common") {
+			inspectorOptions = append(inspectorOptions, inspect.WithStrategyCommon())
+		}
+		if *validateFlag {
+			inspectorOptions = append(inspectorOptions, inspect.WithValidate())
+		}
+
+		inspector, err := inspect.NewInspector(inspectorOptions...)
+		if err != nil {
+			panic(err)
+		}
+
+		inspector.Find()
 		os.Exit(0)
 	}
 
 	stat, _ := os.Stdin.Stat()
 	if (stat.Mode() & os.ModeCharDevice) == 0 {
-		feeds := inspect.InspectHTML(bufio.NewReader(os.Stdin))
-		for _, feed := range feeds {
-			a.outputLogger.Println(feed)
+		inspectorOptions = append(inspectorOptions, inspect.WithTargetHTML(bufio.NewReader(os.Stdin)))
+		inspector, err := inspect.NewInspector(inspectorOptions...)
+		if err != nil {
+			panic(err)
 		}
+
+		inspector.Find()
 		os.Exit(0)
 	}
 

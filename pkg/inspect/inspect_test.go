@@ -33,7 +33,19 @@ func TestInspectURLHeaders(t *testing.T) {
 	}
 
 	s := httptest.NewServer(&m)
-	feedLinks := InspectURL(s.URL, true, false, false, false)
+	feedLinks := []string{}
+	inspector, err := NewInspector(
+		WithTargetURL(s.URL),
+		WithStrategyHeader(),
+		WithOutputHandler(func(feed string) {
+			feedLinks = append(feedLinks, feed)
+		}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	inspector.Find()
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed ")
 	}
@@ -55,7 +67,20 @@ func TestInspectURLPageLinks(t *testing.T) {
 	}
 
 	s := httptest.NewServer(&m)
-	feedLinks := InspectURL(s.URL, false, true, false, false)
+
+	feedLinks := []string{}
+	inspector, err := NewInspector(
+		WithTargetURL(s.URL),
+		WithStrategyPage(),
+		WithOutputHandler(func(feed string) {
+			feedLinks = append(feedLinks, feed)
+		}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	inspector.Find()
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed ")
 	}
@@ -90,7 +115,19 @@ func TestInspectURLPageScripts(t *testing.T) {
 	}
 
 	s := httptest.NewServer(&m)
-	feedLinks := InspectURL(s.URL, false, true, false, false)
+	feedLinks := []string{}
+	inspector, err := NewInspector(
+		WithTargetURL(s.URL),
+		WithStrategyPage(),
+		WithOutputHandler(func(feed string) {
+			feedLinks = append(feedLinks, feed)
+		}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	inspector.Find()
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed")
 	}
