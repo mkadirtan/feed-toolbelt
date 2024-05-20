@@ -1,7 +1,8 @@
 # Feed Toolbelt
 
 Powerful CLI tool for working with various feed types such as RSS, Atom and JSON feeds.
-TODO: Add working GIF
+
+![example usage gif](https://github.com/mkadirtan/feed-toolbelt/blob/master/example.gif)
 
 # Why
 
@@ -13,7 +14,7 @@ the heavylifting for you while you get to create awesomeness.
 Install using go toolchain:
 
 ```bash
-go install github.com/mkadirtan/feed-toolbelt@latest
+GOEXPERIMENT=rangefunc go install github.com/mkadirtan/feed-toolbelt@latest
 ```
 
 Find feeds on a specific website:
@@ -25,25 +26,46 @@ feed-toolbelt find nooptoday.com
 # Usage
 
 ```bash
-feed-toolbelt COMMAND [OPTIONS] url
+feed-toolbelt find [<url>] [flags]
 ```
 
-Available flags:
+```bash
+Arguments:
+[<url>]    target url, optional in case piped input is given
 
-* `-filter` - rss, atom, json
+Flags:
+-h, --help                    Show context-sensitive help.
+
+-p, --pipe                    Use this flag if you pipe HTML content into this command. Piping without using this flag will result in interpreting piped input as
+target url
+-l, --[no-]strategy-header    Toggle header strategy
+-c, --[no-]strategy-page      Toggle page strategy
+-b, --[no-]strategy-common    Toggle common strategy
+-g, --[no-]validate           Validate feed URLs contain actual feeds
+```
 
 ## Examples
 
-To filter out only rss feeds:
+```bash
+feed-toolbelt find nooptoday.com
+```
 
 ```bash
-feed-toolbelt find -filter=rss nooptoday.com
+curl https://nooptoday.com | feed-toolbelt find nooptoday.com --pipe
+```
+
+```bash
+feed-toolbelt find nooptoday.com --strategy-common
 ```
 
 For more information run:
 
 ```bash
-feed-toolbelt help
+feed-toolbelt --help
+```
+
+```bash
+feed-toolbelt find --help
 ```
 
 ## 🤝 Contributing
@@ -60,7 +82,7 @@ cd feed-toolbelt
 Use `GOEXPERIMENT=rangefunc`, otherwise build fails
 
 ```bash
-go build -o feed-toolbelt cmd/main.go
+GOEXPERIMENT=rangefunc go build -o feed-toolbelt cmd/main.go
 ```
 
 ### Run the project
@@ -72,7 +94,7 @@ go build -o feed-toolbelt cmd/main.go
 ### Run the tests
 
 ```bash
-go test ./...
+GOEXPERIMENT=rangefunc go test ./...
 ```
 
 ### Submit a pull request
@@ -84,68 +106,7 @@ some tests, too 🚀
 The contents below are my personal notes. If you are interested in using this tool you might be interested in the future
 plans for this project.
 
-# Plan - What to do
-
-Future plans for this project.
-
-## Accept all url formats
-
-- `feed-toolbelt find https://nooptoday.com`
-- `feed-toolbelt find  http://nooptoday.com`
-- `feed-toolbelt find nooptoday.com`
-
-all should be treated equally.
-
-## Check target url
-
-Some crazy users might input a feed url as target url. In those cases, the program should report the url back.
-
-## Take validation flag
-
-- `feed-toolbelt find https://nooptoday.com -validate`
-
-`-validate` option should validate found feed urls. Common urls are an exception to this rule, they are always
-validated. Those urls are already requested and in many cases those urls result in http status 200 with non-feed
-content.
-
-## Debug Output
-
-- `feed-toolbelt find https://nooptoday.com -v`
-  `-v`, `-verbose` Should report certain issues from the debug logger, if the flag is set.
-
-There is no need to implement a verbosity level in a near future.
-
-Some important output can be:
-
-- Request errors such as 404, 429 or 500.
-- URL format errors, in case the requested url is invalid.
-
-## Structured Output
-
-- `feed-toolbelt find https://nooptoday.com -s`
-  `-s`, `-structured` Should report the found urls in a structured json format.
-  The format can include:
-- url
-- detected_in ( first found place: header, link, common, a tag etc. )
-- feed_type ( rss, json etc. )
-
-## Concurrent request limit and Rate limit
-
-- `feed-toolbelt find https://nooptoday.com -c 4`
-  `-c` or `-concurrent` option should define the concurrent request limit.
-
-Also, if any of the requests get the `429` rate limit error, this should be reported.
-
-## Unique feed urls
-
-Simply keep an Inspector state and don't report the same feed url twice, or do not check the previously found urls in
-the common paths strategy.
-
-## Report redirected url or the target url
-
-- `feed-toolbelt find https://nooptoday.com --report-redirected`
-
-This feature will rarely be useful, however it is a nice to have for completeness.
+# Roadmap
 
 ## Publish on Brew
 
@@ -159,21 +120,3 @@ for this project.
 ## Renaming
 
 If I can't find useful commands to include in this tool, I can rename the tool to `feed-finder`.
-
-# Anti Plan - What not to do
-
-These are some features that will not be implemented in this tool, because they are either out of scope or not preferred
-for simplicity.
-
-## Custom Headers
-
-Do not accept custom headers from the user, it is not the responsibility of this program.
-If required, user can use curl or other tools to specialize the request.
-
-## Parsed Feed Output
-
-Do not output the parsed feed data. This is out of scope.
-
-## Do not visit links outside the specified domain
-
-An arbitrary rule, sometimes you need to draw boundaries. I have no good argument for or against.

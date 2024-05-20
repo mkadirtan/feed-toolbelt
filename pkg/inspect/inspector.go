@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"errors"
 	"net/http"
+
+	"github.com/mkadirtan/feed-toolbelt/pkg/util"
 )
 
 type HandlerFunc func(string)
@@ -33,8 +35,6 @@ type InspectorConfig struct {
 	Validate bool
 	// found feeds will be reported to this function
 	OutputHandler HandlerFunc
-	// debug logs will be reported to this function
-	DebugHandler HandlerFunc
 }
 
 type Option func(*InspectorConfig)
@@ -81,12 +81,6 @@ func WithOutputHandler(outputHandler HandlerFunc) Option {
 	}
 }
 
-func WithDebugHandler(debugHandler HandlerFunc) Option {
-	return func(c *InspectorConfig) {
-		c.DebugHandler = debugHandler
-	}
-}
-
 var (
 	errNoTarget        = errors.New("no target specified")
 	errNoOutputHandler = errors.New("no output handler specified")
@@ -105,6 +99,14 @@ func NewInspector(options ...Option) (*Inspector, error) {
 
 	if config.OutputHandler == nil {
 		return nil, errNoOutputHandler
+	}
+
+	if config.TargetURL != nil {
+		normalizedTargetURL, err := util.NormalizeURL(*config.TargetURL)
+		if err != nil {
+			return nil, err
+		}
+		*config.TargetURL = normalizedTargetURL
 	}
 
 	return &Inspector{

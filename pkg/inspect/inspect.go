@@ -40,6 +40,21 @@ func (i *Inspector) Find() error {
 		i.header = resp.Header
 	}
 
+	// case when given URL itself is a feed URL
+	if i.config.TargetURL != nil {
+		body, err := io.ReadAll(i.body)
+		if err != nil {
+			return err
+		}
+
+		if util.ValidateFeed(bufio.NewReader(bytes.NewBuffer(body))) {
+			i.processFeedCandidate(*i.config.TargetURL, false)
+			return nil
+		}
+
+		i.body = bufio.NewReader(bytes.NewBuffer(body))
+	}
+
 	if i.config.Strategies.Header {
 		i.applyStrategyHeader()
 	}
@@ -54,6 +69,12 @@ func (i *Inspector) Find() error {
 }
 
 func (i *Inspector) processFeedCandidate(feedCandidateURL string, mustValidate bool) {
+	feedCandidateURL, err := util.NormalizeURL(feedCandidateURL)
+
+	if err != nil {
+		return
+	}
+
 	if slices.Contains(i.foundFeeds, feedCandidateURL) {
 		return
 	}
