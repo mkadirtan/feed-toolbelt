@@ -45,7 +45,9 @@ func TestInspectURLHeaders(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	inspector.Find()
+	if err = inspector.Find(); err != nil {
+		t.Error(err)
+	}
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed ")
 	}
@@ -80,7 +82,9 @@ func TestInspectURLPageLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	inspector.Find()
+	if err = inspector.Find(); err != nil {
+		t.Error(err)
+	}
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed ")
 	}
@@ -127,8 +131,33 @@ func TestInspectURLPageScripts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	inspector.Find()
+	if err = inspector.Find(); err != nil {
+		t.Error(err)
+	}
 	if !slices.Contains(feedLinks, feedUrl) {
 		t.Errorf("expected feed")
 	}
+}
+
+func TestLiveWebsite(t *testing.T) {
+	t.SkipNow()
+	websiteURL := "https://nooptoday.com/"
+	var feedLinks = make([]string, 0)
+	inspector, err := NewInspector(
+		WithTargetURL(websiteURL),
+		WithStrategyPage(),
+		WithOutputHandler(func(feed string) {
+			feedLinks = append(feedLinks, feed)
+		}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for i := 0; i < 20; i++ {
+		if err = inspector.Find(); err != nil {
+			t.Fatal(err)
+		}
+	}
+
 }

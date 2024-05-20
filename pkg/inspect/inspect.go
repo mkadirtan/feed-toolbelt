@@ -8,8 +8,10 @@ package inspect
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"slices"
 
@@ -29,7 +31,12 @@ func (i *Inspector) Find() error {
 			return errors.New(fmt.Sprintf("invalid status code: %d", resp.StatusCode))
 		}
 
-		i.body = bufio.NewReader(resp.Body)
+		var buf []byte
+		var newReader = bytes.NewBuffer(buf)
+		if _, cErr := io.Copy(newReader, resp.Body); cErr != nil {
+			return cErr
+		}
+		i.body = bufio.NewReader(newReader)
 		i.header = resp.Header
 	}
 
