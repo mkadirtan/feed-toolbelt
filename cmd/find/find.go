@@ -25,11 +25,6 @@ func (f *FindCMD) Run() error {
 		inspect.WithOutputHandler(func(o string) { fmt.Println(o) }),
 	}
 
-	// not implemented yet
-	if false {
-		options = append(options, inspect.WithDebugHandler(func(d string) { fmt.Println(d) }))
-	}
-
 	if f.Pipe {
 		stat, _ := os.Stdin.Stat()
 		if (stat.Mode() & os.ModeCharDevice) == 0 {
