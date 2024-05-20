@@ -2,7 +2,7 @@
 
 Powerful CLI tool for working with various feed types such as RSS, Atom and JSON feeds.
 
-![example usage gif](https://github.com/mkadirtan/feed-toolbelt/blob/master/example.gif)
+![example usage gif](https://github.com/mkadirtan/feed-toolbelt/blob/main/example.gif)
 
 # Why
 
@@ -101,6 +101,7 @@ GOEXPERIMENT=rangefunc go test ./...
 
 If you'd like to contribute, please fork the repository and open a pull request to the `main` branch. Make sure to add
 some tests, too 🚀
+
 ---
 
 The contents below are my personal notes. If you are interested in using this tool you might be interested in the future
