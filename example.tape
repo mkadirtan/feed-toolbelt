@@ -1,4 +1,5 @@
 Set FontSize 30
+Set PlaybackSpeed 0.75
 Output example.gif
 Set Width 1280
 Set Height 600
